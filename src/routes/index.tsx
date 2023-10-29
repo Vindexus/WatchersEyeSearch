@@ -3,7 +3,7 @@ import Home from '../pages/Home';
 
 const Router = () => {
 	console.log('router')
-	return <BrowserRouter>
+	return <BrowserRouter basename={'/WatchersEyeSearch'}>
 		<Routes>
 			<Route
 				path="/"
