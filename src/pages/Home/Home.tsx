@@ -13,7 +13,7 @@ const Home = () => {
 	const numSelected = selected.length
 	const tradeLink = useWatchersEyeStore(selTradeLink)
 	const [loadedURL, setLoadedURL] = useState(false)
-	const urlChangeRef = useRef<NodeJS.Timeout>(null)
+	const urlChangeRef = useRef<NodeJS.Timeout>()
 
 	useEffect(() => {
 		if (!loadedURL) {
@@ -31,7 +31,7 @@ const Home = () => {
 
 				mods.push(mod.mod.key + '-' + mod.weight)
 				return mods
-			}, [])
+			}, [] as string[])
 			return obj
 		}, {})
 
@@ -44,13 +44,13 @@ const Home = () => {
 		// every single number they slide between to their history
 		clearTimeout(urlChangeRef.current)
 		urlChangeRef.current = setTimeout(() => {
-			window.history.pushState(null, '', '?' + url.toString())
+			window.history.replaceState(null, '', '?' + url.toString())
 		}, 300)
 	}, [loadedURL, tradeLink, numSelected])
 
 	useEffect(() => {
 		function onChange () {
-			const params = new URL(document.location).searchParams
+			const params = new URL(document.location.toString()).searchParams
 			const settingsPut: AuraSettingsPut = {}
 			params.forEach((val, k) => {
 				const auraKey = k as AuraKey
@@ -191,7 +191,7 @@ const Home = () => {
 			</div>
 			<div className={'pt-16'}></div>
 			<div className={'fixed bottom-0 w-full bg-gray-700 border border-gray-800 shadow-[rgba(0,0,15,0.5)_10px_5px_4px_0px] p-4 flex justify-center items-center'}>
-				<a disabled={!tradeLink} href={tradeLink} target={'_blank'} className={'font-bold py-2 px-4 rounded hover:bg-teal-600 bg-teal-700 text-white'}>
+				<a href={tradeLink || ''} target={'_blank'} className={'font-bold py-2 px-4 rounded hover:bg-teal-600 bg-teal-700 text-white ' + (!tradeLink ? 'opacity-25' : '')}>
 					Open Trade Link
 				</a>
 			</div>

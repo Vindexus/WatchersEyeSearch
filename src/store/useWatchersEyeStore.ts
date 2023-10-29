@@ -67,6 +67,7 @@ const useWatchersEyeStore = create<WatchersEyeSearchStore>()(
 							}
 							return m
 						})
+						return as
 					})
 				})
 			},
@@ -158,7 +159,7 @@ const useWatchersEyeStore = create<WatchersEyeSearchStore>()(
 type TradeFilter = {
 	id: string
 	disabled: boolean
-	value: {
+	value?: {
 		weight?: number
 		min?: number
 		max?: number
@@ -190,7 +191,6 @@ export const selTradeLink = (state: WatchersEyeSearchState) : null | string => {
 		as.mods.forEach((ms) => {
 			const normalizedWeight = getModNormalizedWeight(ms.mod, ms.weight)
 
-
 			tfs.push({
 				disabled: !ms.enabled,
 				id: 'explicit.stat_' + ms.mod.stat,
@@ -211,6 +211,18 @@ export const selTradeLink = (state: WatchersEyeSearchState) : null | string => {
 			{
 				type: 'weight',
 				filters: filters,
+				value: {
+					min: 1,
+				}
+			},
+			{
+				type: 'count',
+				filters: filters.map((ft) => {
+					return {
+						disabled: false,
+						id: ft.id,
+					}
+				}),
 				value: {
 					min: 1,
 				}
