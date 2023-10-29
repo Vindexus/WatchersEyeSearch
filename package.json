@@ -11,8 +11,7 @@
     "lint:fix": "eslint --ignore-path .eslintignore --fix ./ --ext .ts,.tsx",
     "format": "prettier --ignore-path .prettierignore --write \"**/*.+(ts|tsx|json)\"",
     "test": "jest",
-    "release": "standard-version",
-    "prepare": "node -e \"if (process.env.NODE_ENV !== 'production'){process.exit(1)} \""
+    "release": "standard-version"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [
