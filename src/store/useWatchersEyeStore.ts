@@ -74,6 +74,9 @@ const useWatchersEyeStore = create<WatchersEyeSearchStore>()(
 			setModWeight: (ak: AuraKey, mk: string, value: number) => {
       	set({
 					auraSettings: get().auraSettings.map((as) => {
+						if (as.key !== ak) {
+							return as
+						}
 						as.mods = as.mods.map((m) => {
 							if (m.mod.key === mk) {
 								m.weight = value
