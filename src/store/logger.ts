@@ -1,4 +1,4 @@
-import { type StateCreator, type StoreMutatorIdentifier } from 'zustand';
+import { StateCreator, StoreMutatorIdentifier } from 'zustand';
 
 type Logger = <
   T,
@@ -15,6 +15,7 @@ type LoggerImpl = <T>(
 ) => StateCreator<T, [], []>;
 
 const loggerImpl: LoggerImpl = (f, name) => (set, get, store) => {
+	//@ts-ignore
   const loggedSet: typeof set = (...a) => {
     set(...a);
     if (import.meta.env.DEV) {
