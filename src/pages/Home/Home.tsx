@@ -190,10 +190,15 @@ const Home = () => {
 				</div>
 			</div>
 			<div className={'pt-16'}></div>
-			<div className={'fixed bottom-0 w-full bg-gray-700 border border-gray-800 shadow-[rgba(0,0,15,0.5)_10px_5px_4px_0px] p-4 flex justify-center items-center'}>
-				<a href={tradeLink || ''} target={'_blank'} className={'font-bold py-2 px-4 rounded hover:bg-teal-600 bg-teal-700 text-white ' + (!tradeLink ? 'opacity-25' : '')}>
-					Open Trade Link
-				</a>
+			<div className={'fixed bottom-0 w-full bg-gray-700 border border-gray-800 shadow-[rgba(0,0,15,0.5)_10px_5px_4px_0px] w-full flex justify-center'}>
+				<div className={'max-w-screen-md w-full p-4 flex justify-between items-center'}>
+					<a href={tradeLink || ''} target={'_blank'} className={'font-bold py-2 px-4 rounded  bg-teal-700 text-white ' + (!tradeLink ? 'opacity-25 cursor-no-drop' : 'hover:bg-teal-600')}>
+						Open Trade Link
+					</a>
+					<a href='https://ko-fi.com/D1D8QMSKH' target='_blank'>
+						<img height='36' style={{border: '0px', 'height':'36px'}} src='https://storage.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' />
+					</a>
+				</div>
 			</div>
 		</>
   );

@@ -171,6 +171,7 @@ type TradeFilter = {
 
 type TradeStat = {
 	type: 'count' | 'weight'
+	disabled: boolean,
 	filters: TradeFilter[]
 	value: {
 		min: number
@@ -214,18 +215,24 @@ export const selTradeLink = (state: WatchersEyeSearchState) : null | string => {
 			{
 				type: 'weight',
 				filters: filters,
+				disabled: false,
 				value: {
 					min: 1,
 				}
 			},
+			// This second block clones all the mods from the weighted sum search, but it
+			// groups them just into a "count" query that is disabled
+			// This is hear so you can easily swap your search from using weight sums to just going
+			// "I want any 2 of these mods" and then selecting them on and off
 			{
 				type: 'count',
 				filters: filters.map((ft) => {
 					return {
-						disabled: false,
+						disabled: ft.disabled,
 						id: ft.id,
 					}
 				}),
+				disabled: true,
 				value: {
 					min: 1,
 				}
@@ -239,8 +246,8 @@ export const selTradeLink = (state: WatchersEyeSearchState) : null | string => {
 	let str = JSON.stringify({
 		query: query,
 		sort: {
-			//'statgroup.0': 'desc', // This appears to be ignored, so I'm just using price: 'desc'
-			price: 'desc',
+			//'statgroup.0': 'desc', // This appears to be ignored, so I'm just using price
+			price: 'asc',
 		}
 	})
 

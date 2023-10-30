@@ -2,8 +2,7 @@ import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import Home from '../pages/Home';
 
 const Router = () => {
-	console.log('router')
-	return <BrowserRouter basename={'/WatchersEyeSearch'}>
+	return <BrowserRouter basename={import.meta.env.VITE_BASENAME}>
 		<Routes>
 			<Route
 				path="/"
