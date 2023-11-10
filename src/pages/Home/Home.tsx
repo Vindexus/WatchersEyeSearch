@@ -7,6 +7,7 @@ const CSS = {
 	card: 'w-full bg-gray-800 border border-gray-800 shadow-lg rounded-2xl p-4 mb-2',
 }
 
+
 const Home = () => {
 	const store = useWatchersEyeStore()
 	const selected = useWatchersEyeStore(state => state.auraSettings.filter(x => x.enabled))
@@ -14,6 +15,7 @@ const Home = () => {
 	const tradeLink = useWatchersEyeStore(selTradeLink)
 	const [loadedURL, setLoadedURL] = useState(false)
 	const urlChangeRef = useRef<NodeJS.Timeout>()
+	const titleRef = useRef(document.title)
 
 	useEffect(() => {
 		if (!loadedURL) {
@@ -48,6 +50,16 @@ const Home = () => {
 		}, 300)
 	}, [loadedURL, tradeLink, numSelected])
 
+	const auraNames = selected.map(x => x.aura.name).join('+')
+	useEffect(() => {
+		if (selected.length === 0) {
+			document.title = titleRef.current
+			return
+		}
+
+		document.title = auraNames + ' ' + titleRef.current
+	}, [auraNames])
+
 	useEffect(() => {
 		function onChange () {
 			const params = new URL(document.location.toString()).searchParams
@@ -73,7 +85,6 @@ const Home = () => {
 				})
 			})
 
-			console.log('settingsPut', settingsPut)
 			store.setAuraSettings(settingsPut)
 			setLoadedURL(true)
 		}

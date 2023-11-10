@@ -58,6 +58,9 @@ const useWatchersEyeStore = create<WatchersEyeSearchStore>()(
 			setModEnabled: (ak: AuraKey, mk: string, enable: boolean) => {
 				set({
 					auraSettings: get().auraSettings.map((as) => {
+						if (ak !== as.key) {
+							return as
+						}
 						as.mods = as.mods.map((m) => {
 							if (m.mod.key === mk) {
 								return {
