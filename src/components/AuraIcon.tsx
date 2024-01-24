@@ -6,7 +6,7 @@ type Props = {
 }
 export function AuraIcon ({aura, className = ''}: Props) {
 	const filename = aura.name.toString().split(' ').join('-').toLowerCase()
-	return <span className={'aura-icon inline-block ' +  className} style={{backgroundImage: `url(/WatchersEyeSearch/auras/${filename}.png`}}>
+	return <span className={'aura-icon inline-block ' +  className} style={{backgroundImage: `url(/auras/${filename}.png`}}>
 
 	</span>
 }
