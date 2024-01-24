@@ -1,6 +1,8 @@
 import {defineConfig, loadEnv} from 'vite'
 import react from '@vitejs/plugin-react'
 import tsconfigPaths from 'vite-tsconfig-paths'
+import vike from 'vike/plugin'
+
 
 export default ({ mode }) => {
 	const myEnv = loadEnv(mode, process.cwd())
@@ -18,6 +20,11 @@ export default ({ mode }) => {
 
 	return defineConfig({
 		base: myEnv.VITE_BASENAME || '/',
-		plugins: [htmlPlugin(), react(), tsconfigPaths()],
+		plugins: [
+			htmlPlugin(),
+			react(),
+			//tsconfigPaths(),
+			vike()
+		],
 	})
 }

@@ -1,6 +1,8 @@
-import { create } from 'zustand';
-import { logger } from './logger';
-import {Aura, Mod, AuraKey, AURAS, getModNormalizedWeight} from "@/lib/auras";
+import {create, createStore} from 'zustand';
+import {logger} from './logger';
+import {createContext} from 'react'
+import {Aura, AuraName, AURAS, getModNormalizedWeight, Mod} from "../lib/auras";
+import {auraSettingToModListString} from "../lib/helpers";
 
 type ModSettings = {
 	mod: Mod
@@ -8,159 +10,170 @@ type ModSettings = {
 	enabled: boolean
 }
 
-type AuraSettings = {
+export type AuraSettings = {
 	enabled: boolean
-	key: AuraKey
 	aura: Aura
 	mods: ModSettings[]
 }
 
 type AuraModWeights = Record<string, number>
 
-export type AuraSettingsPut = Partial<Record<AuraKey, AuraModWeights>>
+export type AuraSettingsPut = Partial<Record<AuraName, AuraModWeights>>
 
 interface WatchersEyeSearchState {
 	auraSettings: AuraSettings[],
 }
 
 export interface WatchersEyeSearchStore extends WatchersEyeSearchState {
-  toggleAura: (key: AuraKey) => void
-	setModWeight: (akey: AuraKey, modKey: string, value: number) => void
-	setModEnabled: (akey: AuraKey, modKey: string, value: boolean) => void
-	toggleAuraMods: (key: AuraKey) => void
+  toggleAura: (name: AuraName) => void
+	setModWeight: (aname: AuraName, modKey: string, value: number) => void
+	setModEnabled: (aname: AuraName, modKey: string, value: boolean) => void
+	toggleAuraMods: (name: AuraName) => void
 	setAuraSettings: (s: AuraSettingsPut) => void
 }
 
-const initialState: Pick<WatchersEyeSearchStore, keyof WatchersEyeSearchState> = {
-	auraSettings: AURAS.map((aura) : AuraSettings => {
-		const settings : AuraSettings = {
-			key: aura.key,
-			enabled: false,
-			aura: aura,
-			mods: aura.mods.map((m) : ModSettings => {
-				const mSetting : ModSettings = {
-					enabled: true,
-					weight: 50,
-					mod: m,
-				}
-				return mSetting
-			})
-		}
-		return settings
+const initialState = (opts: WatchersEyeInitialProps) : Pick<WatchersEyeSearchStore, keyof WatchersEyeSearchState> => {
+	return {
+		auraSettings: AURAS.map((aura) : AuraSettings => {
+			const modSettings = opts.modSettings[aura.name] || {}
+			const settings : AuraSettings = {
+				enabled: opts.auras.includes(aura.name),
+				aura: aura,
+				mods: aura.mods.map((m) : ModSettings => {
+					const value = modSettings[m.key] || 50
+					const mSetting : ModSettings = {
+						enabled: true,
+						weight: value,
+						mod: m,
+					}
+					return mSetting
+				})
+			}
+			return settings
 
-	}),
+		})
+	}
 };
 
-const useWatchersEyeStore = create<WatchersEyeSearchStore>()(
-  logger<WatchersEyeSearchStore>(
-    (set, get) => ({
-      ...initialState,
-			setModEnabled: (ak: AuraKey, mk: string, enable: boolean) => {
-				set({
-					auraSettings: get().auraSettings.map((as) => {
-						if (ak !== as.key) {
-							return as
-						}
-						as.mods = as.mods.map((m) => {
-							if (m.mod.key === mk) {
-								return {
-									...m,
-									enabled: enable,
-								}
-							}
-							return m
-						})
-						return as
-					})
-				})
-			},
-			setModWeight: (ak: AuraKey, mk: string, value: number) => {
-      	set({
-					auraSettings: get().auraSettings.map((as) => {
-						if (as.key !== ak) {
-							return as
-						}
-						as.mods = as.mods.map((m) => {
-							if (m.mod.key === mk) {
-								m.weight = value
-							}
-							return m
-						})
-						return as
-					}),
-				})
-			},
-			toggleAuraMods: (k: AuraKey) => {
-				set({
-					auraSettings: get().auraSettings.map((as) => {
-						if (as.key !== k) {
-							return as
-						}
+type WatchersEyeStore = ReturnType<typeof createWatchersEyeStore>
 
-						const numEnabled = as.mods.filter(x => x.enabled).length
-						const cutoff = Math.ceil(as.mods.length / 2)
-						const enable = numEnabled < cutoff
-
-						as.mods = as.mods.map((m) => {
-							m.enabled = enable
-							return m
-						})
-						return as
-					})
-				})
-			},
-			toggleAura: (k: AuraKey) => {
-        set(() => ({
-					auraSettings: get().auraSettings.map((a) => {
-						if (a.key === k) {
-							return {
-								...a,
-								enabled: !a.enabled,
+type WatchersEyeInitialProps = {
+	auras: AuraName[]
+	modSettings: AuraSettingsPut
+}
+export const createWatchersEyeStore = (opts: WatchersEyeInitialProps) => {
+	return createStore<WatchersEyeSearchStore>()(
+		logger<WatchersEyeSearchStore>(
+			(set, get) => ({
+				...initialState(opts),
+				setModEnabled: (ak: AuraName, mk: string, enable: boolean) => {
+					set({
+						auraSettings: get().auraSettings.map((as) => {
+							if (ak !== as.aura.name) {
+								return as
 							}
-						}
-						return a
-					})
-        }));
-      },
-			setAuraSettings: (asp: AuraSettingsPut) => {
-				set(() => ({
-					auraSettings: get().auraSettings.map((a) => {
-						const put = asp[a.key]
-						if (!put) {
-							return {
-								...a,
-								enabled: false,
-							}
-						}
-
-						return {
-							...a,
-							enabled: true,
-							mods: a.mods.map((ms) => {
-								if (!(ms.mod.key in put)) {
+							as.mods = as.mods.map((m) => {
+								if (m.mod.key === mk) {
 									return {
-										...ms,
-										enabled: false,
-										weight: 50,
+										...m,
+										enabled: enable,
 									}
 								}
-
-								return {
-									...ms,
-									enabled: true,
-									weight: put[ms.mod.key]
-								}
+								return m
 							})
-						}
-
+							return as
+						})
 					})
-				}));
-			}
-    }),
-    'watchersEyeSearchStore'
-  )
-);
+				},
+				setModWeight: (ak: AuraName, mk: string, value: number) => {
+					set({
+						auraSettings: get().auraSettings.map((as) => {
+							if (as.aura.name !== ak) {
+								return as
+							}
+							as.mods = as.mods.map((m) => {
+								if (m.mod.key === mk) {
+									m.weight = value
+								}
+								return m
+							})
+							return as
+						}),
+					})
+				},
+				toggleAuraMods: (k: AuraName) => {
+					set({
+						auraSettings: get().auraSettings.map((as) => {
+							if (as.aura.name !== k) {
+								return as
+							}
 
+							const numEnabled = as.mods.filter(x => x.enabled).length
+							const cutoff = Math.ceil(as.mods.length / 2)
+							const enable = numEnabled < cutoff
+
+							as.mods = as.mods.map((m) => {
+								m.enabled = enable
+								return m
+							})
+							return as
+						})
+					})
+				},
+				toggleAura: (k: AuraName) => {
+					set(() => ({
+						auraSettings: get().auraSettings.map((a) => {
+							if (a.aura.name === k) {
+								return {
+									...a,
+									enabled: !a.enabled,
+								}
+							}
+							return a
+						})
+					}));
+				},
+				setAuraSettings: (asp: AuraSettingsPut) => {
+					set(() => ({
+						auraSettings: get().auraSettings.map((a) => {
+							const put = asp[a.aura.name]
+							if (!put) {
+								return {
+									...a,
+									enabled: false,
+								}
+							}
+
+							return {
+								...a,
+								enabled: true,
+								mods: a.mods.map((ms) => {
+									if (!(ms.mod.key in put)) {
+										return {
+											...ms,
+											enabled: false,
+											weight: 50,
+										}
+									}
+
+									return {
+										...ms,
+										enabled: true,
+										weight: put[ms.mod.key]
+									}
+								})
+							}
+
+						})
+					}));
+				}
+			}),
+			'watchersEyeSearchStore'
+		)
+	);
+}
+
+export const WatchersEyeContext = createContext<WatchersEyeStore|null>(null)
 
 type TradeFilter = {
 	id: string
@@ -186,6 +199,25 @@ type TradeQuery = {
 		option: 'online' | 'any'
 	},
 	stats: TradeStat[]
+}
+
+export const selModWeightURLSearchParams = (state: WatchersEyeSearchState, excludeAura?: string) : string => {
+	const query = state.auraSettings.reduce((obj: any, as) => {
+		if (!as.enabled || excludeAura === as.aura.slug) {
+			return obj
+		}
+		const modList = auraSettingToModListString(as)
+		obj[as.aura.slug] = modList
+		return obj
+	}, {})
+
+	const url = new URLSearchParams()
+	Object.keys(query).forEach((auraKey) => {
+		if (query[auraKey] !== '_') {
+			url.set(auraKey, query[auraKey])
+		}
+	})
+	return url.toString()
 }
 
 export const selTradeLink = (state: WatchersEyeSearchState) : null | string => {
@@ -259,4 +291,6 @@ export const selTradeLink = (state: WatchersEyeSearchState) : null | string => {
 	return link
 }
 
-export default useWatchersEyeStore;
+export function getAurasRoute (slugs: string[]) : string {
+	return slugs.filter(x => !!x).sort().join('/')
+}

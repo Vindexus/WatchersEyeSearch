@@ -1,1 +1,1 @@
-export { default } from './Home';
+export { default } from '../../../pages/catch-all/+Page';

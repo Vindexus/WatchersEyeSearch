@@ -1,4 +1,4 @@
-import {Aura} from "@/lib/auras";
+import {Aura} from "../lib/auras";
 
 type Props = {
 	aura: Aura

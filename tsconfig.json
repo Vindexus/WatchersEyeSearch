@@ -20,7 +20,6 @@
     "paths": {
       "@/components/*": ["components/*"],
       "@/pages/*": ["pages/*"],
-      "@/lib/*": ["lib/*"],
       "@/types/*": ["types/*"],
       "@/hooks/*": ["hooks/*"],
       "@/store/*": ["store/*"],

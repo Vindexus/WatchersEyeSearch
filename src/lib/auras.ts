@@ -1,3 +1,4 @@
+import {toTitleCase} from "./helpers";
 
 export type AuraName = 'Anger' |
 'Clarity' |
@@ -17,13 +18,15 @@ export type AuraName = 'Anger' |
 'Wrath' |
 'Zealotry'
 
-export type AuraKey = 'a' | 'c' | 'de' | 'di' | 'g' | 'hs' | 'ht' | 'm' | 'pc' | 'pd' | 'pe' | 'pf' | 'pi' | 'pl' | 'v' | 'w' | 'z'
 
-export type Aura = {
-	key: AuraKey
+type AuraDef = {
 	name: AuraName
 	mods: Mod[]
 	stat: 'dex' | 'int' | 'str'
+}
+
+export type Aura = AuraDef & {
+	slug: string
 }
 
 export type Mod = {
@@ -97,10 +100,9 @@ function newMod (description: string, key: string, stat: number) : Mod {
 
 
 
-let auras : Aura[] = []
+let auraDefs : AuraDef[] = []
 
-auras.push({
-	key: 'a',
+auraDefs.push({
 	name: 'Anger',
 	stat: 'str',
 	mods: [
@@ -113,8 +115,7 @@ auras.push({
 	]
 })
 
-auras.push({
-	key: 'de',
+auraDefs.push({
 	name: 'Determination',
 	stat: 'str',
 	mods: [
@@ -127,8 +128,7 @@ auras.push({
 	]
 })
 
-auras.push({
-	key: 'pd',
+auraDefs.push({
 	name: 'Pride',
 	stat: 'str',
 	mods: [
@@ -140,8 +140,7 @@ auras.push({
 	]
 })
 
-auras.push({
-	key: 'pf',
+auraDefs.push({
 	name: 'Purity of Fire',
 	stat: 'str',
 	mods: [
@@ -152,8 +151,7 @@ auras.push({
 	]
 })
 
-auras.push({
-	key: 'v',
+auraDefs.push({
 	name: 'Vitality',
 	stat: 'str',
 	mods: [
@@ -165,8 +163,7 @@ auras.push({
 	]
 })
 
-auras.push({
-	key: 'g',
+auraDefs.push({
 	name: 'Grace',
 	stat: 'dex',
 	mods: [
@@ -178,8 +175,7 @@ auras.push({
 	]
 })
 
-auras.push({
-	key: 'hs',
+auraDefs.push({
 	name: 'Haste',
 	stat: 'dex',
 	mods: [
@@ -191,8 +187,7 @@ auras.push({
 	]
 })
 
-auras.push({
-	key: 'ht',
+auraDefs.push({
 	name: 'Hatred',
 	stat: 'dex',
 	mods: [
@@ -204,8 +199,7 @@ auras.push({
 	]
 })
 
-auras.push({
-	key: 'pc',
+auraDefs.push({
 	name: 'Precision',
 	stat: 'dex',
 	mods: [
@@ -217,8 +211,7 @@ auras.push({
 	]
 })
 
-auras.push({
-	key: 'pi',
+auraDefs.push({
 	name: 'Purity of Ice',
 	stat: 'dex',
 	mods: [
@@ -229,8 +222,7 @@ auras.push({
 	]
 })
 
-auras.push({
-	key: 'c',
+auraDefs.push({
 	name: 'Clarity',
 	stat: 'int',
 	mods: [
@@ -243,8 +235,7 @@ auras.push({
 	]
 })
 
-auras.push({
-	key: 'di',
+auraDefs.push({
 	name: 'Discipline',
 	stat: 'int',
 	mods: [
@@ -256,8 +247,7 @@ auras.push({
 	]
 })
 
-auras.push({
-	key: 'm',
+auraDefs.push({
 	name: 'Malevolence',
 	stat: 'int',
 	mods: [
@@ -269,8 +259,7 @@ auras.push({
 	]
 })
 
-auras.push({
-	key: 'pe',
+auraDefs.push({
 	name: 'Purity of Elements',
 	stat: 'int',
 	mods: [
@@ -283,8 +272,7 @@ auras.push({
 	]
 })
 
-auras.push({
-	key: 'pl',
+auraDefs.push({
 	name: 'Purity of Lightning',
 	stat: 'int',
 	mods: [
@@ -295,8 +283,7 @@ auras.push({
 	]
 })
 
-auras.push({
-	key: 'w',
+auraDefs.push({
 	name: 'Wrath',
 	stat: 'int',
 	mods: [
@@ -309,8 +296,7 @@ auras.push({
 	]
 })
 
-auras.push({
-	key: 'z',
+auraDefs.push({
 	name: 'Zealotry',
 	stat: 'int',
 	mods: [
@@ -324,7 +310,7 @@ auras.push({
 	]
 })
 
-export const AURAS = auras.sort((a, b) => {
+export const AURAS : Aura[] = auraDefs.sort((a, b) => {
 	if (a.stat === b.stat) {
 		return a.name < b.name ? -1 : 1
 	}
@@ -338,18 +324,28 @@ export const AURAS = auras.sort((a, b) => {
 	}
 
 	return a.stat < b.stat ? -1 : 1
+}).map((def) => {
+	return {
+		...def,
+		slug: def.name.split(' ').map(x => toTitleCase(x)).join('')
+	}
 })
 
-const auraModKeys : Partial<Record<AuraKey, string[]>> = {}
+const auraModKeys : Partial<Record<string, string[]>> = {}
 
-export const AURA_MAP : Partial<Record<AuraKey, Aura>> = AURAS.reduce((map, aura) => {
-	map[aura.key] = aura
-	auraModKeys[aura.key] = []
+export const AURA_SLUG_MAP : Record<string, Aura> = AURAS.reduce((map, aura) => {
+	map[aura.slug] = aura
+	return map
+}, {})
+
+export const AURA_NAME_MAP : Partial<Record<AuraName, Aura>> = AURAS.reduce((map, aura) => {
+	map[aura.name] = aura
+	auraModKeys[aura.name] = []
 	aura.mods.forEach((m) => {
-		if (auraModKeys[aura.key]?.includes(m.key)) {
+		if (auraModKeys[aura.name]?.includes(m.key)) {
 			console.warn(`Aura ${aura.name} has more than one mod with key "${m.key}"`)
 		}
-		auraModKeys[aura.key]!.push(m.key)
+		auraModKeys[aura.name]!.push(m.key)
 	})
 	return map
-}, {} as Partial<Record<AuraKey, Aura>>)
+}, {} as Partial<Record<AuraName, Aura>>)
