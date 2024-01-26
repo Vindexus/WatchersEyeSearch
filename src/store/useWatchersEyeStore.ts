@@ -17,7 +17,7 @@ export type AuraSettings = {
 	mods: ModSettings[]
 }
 
-type AuraModWeights = Record<string, number|boolean>
+type AuraModWeights = Record<string, number>
 
 export type AuraSettingsPut = Partial<Record<AuraName, AuraModWeights>>
 

@@ -390,9 +390,6 @@ function getPagesWithAddedAura (pages: string[][], auraSlug: string) : string[][
 export function getPrerenderSlugs () : string[] {
 	let starting : string[][] = []
 	AURAS.forEach((aura, i) => {
-		if (i >= 12) {
-			return
-		}
 		starting = getPagesWithAddedAura(starting, aura.slug)
 	})
 	return starting.map(x => x.join('-')).sort()

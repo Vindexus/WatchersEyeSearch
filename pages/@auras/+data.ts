@@ -47,7 +47,7 @@ const data = (pageContext: PageContextServer) => {
 
 			if (pageContext.urlParsed.search[slug] === '_') {
 				return modSettings[aura.name] = aura.mods.reduce((mods, mod) => {
-					mods[mod.key] = false
+					mods[mod.key] = 0
 					return mods
 				}, {})
 			}
