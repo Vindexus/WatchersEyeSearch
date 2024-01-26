@@ -42,6 +42,8 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build
+      - name: Copy 404
+        run: cp dist/client/index.html dist/client/404.html
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
