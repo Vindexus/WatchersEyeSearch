@@ -32,9 +32,7 @@ const Page = () => {
 	</WatchersEyeContext.Provider>
 }
 
-const PageInner = () => {
-	const data = useData<Data>()
-	console.log('data', data)
+export const PageInner = () => {
 	const store = useContext(WatchersEyeContext)
 	if (!store) throw new Error('Missing WatchersEyeContext.Provider in the tree')
 
