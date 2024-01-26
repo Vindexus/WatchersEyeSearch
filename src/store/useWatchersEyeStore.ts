@@ -3,6 +3,7 @@ import {logger} from './logger';
 import {createContext} from 'react'
 import {Aura, AuraName, AURAS, getModNormalizedWeight, Mod} from "../lib/auras";
 import {auraSettingToModListString} from "../lib/helpers";
+import {number} from "yup";
 
 type ModSettings = {
 	mod: Mod
@@ -16,7 +17,7 @@ export type AuraSettings = {
 	mods: ModSettings[]
 }
 
-type AuraModWeights = Record<string, number>
+type AuraModWeights = Record<string, number|boolean>
 
 export type AuraSettingsPut = Partial<Record<AuraName, AuraModWeights>>
 
@@ -40,10 +41,17 @@ const initialState = (opts: WatchersEyeInitialProps) : Pick<WatchersEyeSearchSto
 				enabled: opts.auras.includes(aura.name),
 				aura: aura,
 				mods: aura.mods.map((m) : ModSettings => {
+					if (!modSettings[m.key]) {
+						return {
+							weight: 50,
+							mod: m,
+							enabled: false,
+						}
+					}
 					const value = modSettings[m.key] || 50
 					const mSetting : ModSettings = {
 						enabled: true,
-						weight: value,
+						weight: value as number,
 						mod: m,
 					}
 					return mSetting
@@ -206,6 +214,15 @@ export const selModWeightURLSearchParams = (state: WatchersEyeSearchState, exclu
 		if (!as.enabled || excludeAura === as.aura.slug) {
 			return obj
 		}
+		// ?Clarity=_ means all its mods are disabled
+		if (as.mods.every(m => !m.enabled)) {
+			obj[as.aura.slug] = '_'
+			return obj
+		}
+		// If all the mods are in their default position, don't bother adding it to the URL
+		if (as.mods.every(m => m.enabled && m.weight === 50)) {
+			return obj
+		}
 		const modList = auraSettingToModListString(as)
 		obj[as.aura.slug] = modList
 		return obj
@@ -213,9 +230,7 @@ export const selModWeightURLSearchParams = (state: WatchersEyeSearchState, exclu
 
 	const url = new URLSearchParams()
 	Object.keys(query).forEach((auraKey) => {
-		if (query[auraKey] !== '_') {
-			url.set(auraKey, query[auraKey])
-		}
+		url.set(auraKey, query[auraKey])
 	})
 	return url.toString()
 }

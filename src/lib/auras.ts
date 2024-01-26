@@ -370,7 +370,6 @@ export function aurasSlugToAuras (slug: string) : Aura[] {
 }
 
 export function aurasToSlug (auras: Aura[]) : string {
-	console.log('aura', auras)
 	return auras.slice().sort((a,b) => {
 		return a.slug < b.slug ? -1 : 1
 	}).map(a => a.slug).join('-')

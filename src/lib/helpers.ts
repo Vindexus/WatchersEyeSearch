@@ -4,6 +4,9 @@ export function oxfordJoin (list: (string | number)[], ending: string = ' and') 
 	if (list.length === 0) {
 		return '[empty list]'
 	}
+	if (list.length === 2) {
+		return list[0] + ending + ' ' + list[1]
+	}
 	const copy = [...list]
 	const last = copy.pop()
 	if (!last) {
@@ -24,7 +27,7 @@ export function toTitleCase (str: string) : string {
 }
 
 export function auraSettingToModListString (as: AuraSettings) : string {
-	if (as.mods.every(m => m.weight === 50)) {
+	if (as.mods.every(m => !m.enabled)) {
 		return '_'
 	}
 	const strings = as.mods.reduce((mods, mod) => {

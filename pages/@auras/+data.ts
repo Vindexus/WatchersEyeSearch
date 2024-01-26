@@ -43,8 +43,17 @@ const data = (pageContext: PageContextServer) => {
 				return
 			}
 
+			const aura = AURA_SLUG_MAP[slug]
+
+			if (pageContext.urlParsed.search[slug] === '_') {
+				return modSettings[aura.name] = aura.mods.reduce((mods, mod) => {
+					mods[mod.key] = false
+					return mods
+				}, {})
+			}
+
 			const vals = stringToModMap(pageContext.urlParsed.search[slug])
-			modSettings[AURA_SLUG_MAP[slug].name] = vals
+			modSettings[aura.name] = vals
 		})
 	}
 
