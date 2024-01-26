@@ -1,7 +1,6 @@
-import {AuraSettings} from "@/store/useWatchersEyeStore";
+import {AuraSettings} from "../store/useWatchersEyeStore";
 
 export function oxfordJoin (list: (string | number)[], ending: string = ' and') : string {
-	console.log('list', list)
 	if (list.length === 0) {
 		return '[empty list]'
 	}
@@ -14,8 +13,8 @@ export function oxfordJoin (list: (string | number)[], ending: string = ' and') 
 		return last.toString()
 	}
 	let str = copy.join(', ')
-	if (last) {
-		str += ending + ' ' + last
+	if (last && str) {
+		str += ending + ', ' + last
 	}
 	return str
 }

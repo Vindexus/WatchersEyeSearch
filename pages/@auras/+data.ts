@@ -1,5 +1,5 @@
 // https://vike.dev/data
-import {AURA_NAME_MAP, AURA_SLUG_MAP, AURAS} from "../../src/lib/auras";
+import {AURA_NAME_MAP, AURA_SLUG_MAP, AURAS, aurasSlugToAuras, aurasToSlug} from "../../src/lib/auras";
 import { redirect } from 'vike/abort'
 
 
@@ -8,27 +8,19 @@ export type Data = ReturnType<typeof data>
 
 import type { PageContextServer } from 'vike/types'
 import {oxfordJoin, stringToModMap} from "../../src/lib/helpers";
-import {AuraSettingsPut} from "@/store/useWatchersEyeStore";
+import {AuraSettingsPut} from "../../src/store/useWatchersEyeStore";
 
 const data = (pageContext: PageContextServer) => {
-	const glob = pageContext.routeParams['*']
-	const slugs = glob.replace('/', '').split('_').filter(x => !!x)
-	const slugMap : Record<string, boolean> = {}
-	const auras = slugs.map((slug) => {
-		const aura = AURAS.find(x => x.slug.toLowerCase() === slug.toLowerCase())
-		if (!aura) {
-			console.log(`Could not find aura with key "${slug}"`)
-			throw redirect('/')
-		}
-		slugMap[slug] = true
-		return aura
-	})
+	const rawSlug = pageContext.routeParams['auras']
+	const auras = aurasSlugToAuras(rawSlug)
+	const aurasSlug = aurasToSlug(auras)
 
+	console.log('rawSlug', rawSlug)
+	console.log('aurasSlug', aurasSlug)
 
-	const slugsPath = '/' + Object.keys(slugMap).sort().join('_')
-
-	if (slugsPath !== glob && slugsPath) {
-		throw redirect(slugsPath)
+	if (aurasSlug !== rawSlug && aurasSlug) {
+		console.log('THROWING')
+		throw redirect('/' + aurasSlug)
 	}
 
 	let aurasStr = ''
@@ -37,10 +29,12 @@ const data = (pageContext: PageContextServer) => {
 	}
 
 	const modSettings : AuraSettingsPut = {}
+	console.log('auraStr', aurasStr)
 
 	if (pageContext.urlParsed.search) {
 		console.log('pageContext.urlParsed.search', pageContext.urlParsed.search)
 		Object.keys(pageContext.urlParsed.search).forEach((slug) => {
+			console.log('slug from search', slug)
 			if (!AURA_SLUG_MAP[slug]) {
 				return
 			}
@@ -53,6 +47,8 @@ const data = (pageContext: PageContextServer) => {
 			modSettings[AURA_SLUG_MAP[slug].name] = vals
 		})
 	}
+
+	console.log('data got got')
 
 	return {
 		auras,

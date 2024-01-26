@@ -1,4 +1,5 @@
 import {toTitleCase} from "./helpers";
+console.log('toTitleCase', toTitleCase)
 
 export type AuraName = 'Anger' |
 'Clarity' |
@@ -349,3 +350,51 @@ export const AURA_NAME_MAP : Partial<Record<AuraName, Aura>> = AURAS.reduce((map
 	})
 	return map
 }, {} as Partial<Record<AuraName, Aura>>)
+
+
+export function aurasSlugToAuras (slug: string) : Aura[] {
+	const slugs = slug.split('-').filter(x => !!x)
+	console.log('slugs', slugs)
+	const slugMap : Record<string, boolean> = {}
+	slugs.forEach((slug) => {
+		const aura = AURAS.find(x => x.slug.toLowerCase() === slug.toLowerCase())
+		if (aura) {
+			slugMap[aura.slug] = true
+		}
+	})
+
+	const sortedKeys = Object.keys(slugMap).sort()
+	console.log('sorted keys', sortedKeys)
+
+	return sortedKeys.map(slug => AURA_SLUG_MAP[slug])
+}
+
+export function aurasToSlug (auras: Aura[]) : string {
+	console.log('aura', auras)
+	return auras.slice().sort((a,b) => {
+		return a.slug < b.slug ? -1 : 1
+	}).map(a => a.slug).join('-')
+}
+
+function getPagesWithAddedAura (pages: string[][], auraSlug: string) : string[][] {
+	const newPages : string[][] = [
+	]
+	pages.forEach((auraSlugs) => {
+		if (!auraSlugs.includes(auraSlug) && auraSlugs.length <= 2) {
+			newPages.push([...auraSlugs, auraSlug].sort())
+		}
+	})
+	newPages.push([auraSlug])
+	return pages.concat(newPages)
+}
+
+export function getPrerenderSlugs () : string[] {
+	let starting : string[][] = []
+	AURAS.forEach((aura, i) => {
+		if (i >= 12) {
+			return
+		}
+		starting = getPagesWithAddedAura(starting, aura.slug)
+	})
+	return starting.map(x => x.join('-')).sort()
+}

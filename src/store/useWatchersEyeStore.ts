@@ -290,7 +290,3 @@ export const selTradeLink = (state: WatchersEyeSearchState) : null | string => {
 	const link = url + encodeURIComponent(str)
 	return link
 }
-
-export function getAurasRoute (slugs: string[]) : string {
-	return slugs.filter(x => !!x).sort().join('_')
-}
