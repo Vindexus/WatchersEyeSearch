@@ -41,11 +41,18 @@ const initialState = (opts: WatchersEyeInitialProps) : Pick<WatchersEyeSearchSto
 				enabled: opts.auras.includes(aura.name),
 				aura: aura,
 				mods: aura.mods.map((m) : ModSettings => {
-					if (!modSettings[m.key]) {
+					if (modSettings[m.key] === 0) {
 						return {
 							weight: 50,
 							mod: m,
 							enabled: false,
+						}
+					}
+					if (!modSettings[m.key]) {
+						return {
+							weight: 50,
+							mod: m,
+							enabled: true,
 						}
 					}
 					const value = modSettings[m.key] || 50
@@ -211,16 +218,21 @@ type TradeQuery = {
 
 export const selModWeightURLSearchParams = (state: WatchersEyeSearchState, excludeAura?: string) : string => {
 	const query = state.auraSettings.reduce((obj: any, as) => {
+		//console.log('----')
+		//console.log('as.aura', as.aura.slug)
 		if (!as.enabled || excludeAura === as.aura.slug) {
+			//console.log('aura not enabled')
 			return obj
 		}
 		// ?Clarity=_ means all its mods are disabled
 		if (as.mods.every(m => !m.enabled)) {
+			//console.log('no mods are enabled')
 			obj[as.aura.slug] = '_'
 			return obj
 		}
 		// If all the mods are in their default position, don't bother adding it to the URL
 		if (as.mods.every(m => m.enabled && m.weight === 50)) {
+			//console.log('all mods are enabled and 50')
 			return obj
 		}
 		const modList = auraSettingToModListString(as)
@@ -230,7 +242,9 @@ export const selModWeightURLSearchParams = (state: WatchersEyeSearchState, exclu
 
 	const url = new URLSearchParams()
 	Object.keys(query).forEach((auraKey) => {
-		url.set(auraKey, query[auraKey])
+		if (query[auraKey]) {
+			url.set(auraKey, query[auraKey])
+		}
 	})
 	return url.toString()
 }

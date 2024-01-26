@@ -354,7 +354,6 @@ export const AURA_NAME_MAP : Partial<Record<AuraName, Aura>> = AURAS.reduce((map
 
 export function aurasSlugToAuras (slug: string) : Aura[] {
 	const slugs = slug.split('-').filter(x => !!x)
-	console.log('slugs', slugs)
 	const slugMap : Record<string, boolean> = {}
 	slugs.forEach((slug) => {
 		const aura = AURAS.find(x => x.slug.toLowerCase() === slug.toLowerCase())
@@ -364,7 +363,6 @@ export function aurasSlugToAuras (slug: string) : Aura[] {
 	})
 
 	const sortedKeys = Object.keys(slugMap).sort()
-	console.log('sorted keys', sortedKeys)
 
 	return sortedKeys.map(slug => AURA_SLUG_MAP[slug])
 }

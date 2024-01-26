@@ -15,11 +15,7 @@ const data = (pageContext: PageContextServer) => {
 	const auras = aurasSlugToAuras(rawSlug)
 	const aurasSlug = aurasToSlug(auras)
 
-	console.log('rawSlug', rawSlug)
-	console.log('aurasSlug', aurasSlug)
-
 	if (aurasSlug !== rawSlug && aurasSlug) {
-		console.log('THROWING')
 		throw redirect('/' + aurasSlug)
 	}
 
@@ -29,12 +25,9 @@ const data = (pageContext: PageContextServer) => {
 	}
 
 	const modSettings : AuraSettingsPut = {}
-	console.log('auraStr', aurasStr)
 
 	if (pageContext.urlParsed.search) {
-		console.log('pageContext.urlParsed.search', pageContext.urlParsed.search)
 		Object.keys(pageContext.urlParsed.search).forEach((slug) => {
-			console.log('slug from search', slug)
 			if (!AURA_SLUG_MAP[slug]) {
 				return
 			}
@@ -56,8 +49,6 @@ const data = (pageContext: PageContextServer) => {
 			modSettings[aura.name] = vals
 		})
 	}
-
-	console.log('data got got')
 
 	return {
 		auras,
