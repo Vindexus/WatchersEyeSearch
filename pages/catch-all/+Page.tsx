@@ -153,7 +153,7 @@ const PageInner = () => {
 
 	function getAuraToggleURL (as: AuraSettings) {
 		let linkAuras : string[]
-		let exclude : string
+		let exclude : string = ''
 		if (as.enabled) {
 			exclude = as.aura.slug
 			linkAuras = selectedSlugs.filter(x => x !== as.aura.slug)
@@ -164,8 +164,11 @@ const PageInner = () => {
 
 		const href = '/' + getAurasRoute(linkAuras)
 
-		const search = selModWeightURLSearchParams(store.getState(), exclude)
+		if (!store) {
+			return href
+		}
 
+		const search = selModWeightURLSearchParams(store.getState(), exclude)
 
 		return href + '?' + search
 	}

@@ -8,17 +8,17 @@ export type Data = ReturnType<typeof data>
 
 import type { PageContextServer } from 'vike/types'
 import {oxfordJoin, stringToModMap} from "../../src/lib/helpers";
-import {AuraSettingsPut} from "@/store/useWatchersEyeStore";
+import {AuraSettingsPut} from "../../src/store/useWatchersEyeStore";
 
 const data = (pageContext: PageContextServer) => {
 	const glob = pageContext.routeParams['*']
-	const slugs = glob.replace('/', '').split('_').filter(x => !!x)
+	const slugs = glob.split('_').filter(x => !!x)
 	const slugMap : Record<string, boolean> = {}
 	const auras = slugs.map((slug) => {
 		const aura = AURAS.find(x => x.slug.toLowerCase() === slug.toLowerCase())
 		if (!aura) {
-			console.log(`Could not find aura with key "${slug}"`)
 			throw redirect('/')
+			throw new Error(`Could not find aura with key "${slug}"`)
 		}
 		slugMap[slug] = true
 		return aura

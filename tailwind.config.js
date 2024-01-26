@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-undef
 module.exports = {
-  content: ['./src/**/*.tsx'],
+  content: ['./src/**/*.tsx', './pages/**/*.tsx'],
   theme: {
     extend: {},
   },

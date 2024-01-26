@@ -333,7 +333,7 @@ export const AURAS : Aura[] = auraDefs.sort((a, b) => {
 
 const auraModKeys : Partial<Record<string, string[]>> = {}
 
-export const AURA_SLUG_MAP : Record<string, Aura> = AURAS.reduce((map, aura) => {
+export const AURA_SLUG_MAP : Record<string, Aura> = AURAS.reduce((map: Record<string, Aura>, aura) => {
 	map[aura.slug] = aura
 	return map
 }, {})

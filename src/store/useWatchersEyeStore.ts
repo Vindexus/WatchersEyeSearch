@@ -292,5 +292,5 @@ export const selTradeLink = (state: WatchersEyeSearchState) : null | string => {
 }
 
 export function getAurasRoute (slugs: string[]) : string {
-	return slugs.filter(x => !!x).sort().join('/')
+	return slugs.filter(x => !!x).sort().join('_')
 }

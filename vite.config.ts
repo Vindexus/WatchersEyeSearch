@@ -24,7 +24,11 @@ export default ({ mode }) => {
 			htmlPlugin(),
 			react(),
 			//tsconfigPaths(),
-			vike()
+			vike({
+				prerender: {
+					partial: true,
+				}
+			})
 		],
 	})
 }

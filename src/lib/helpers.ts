@@ -7,7 +7,10 @@ export function oxfordJoin (list: (string | number)[], ending: string = ' and') 
 	}
 	const copy = [...list]
 	const last = copy.pop()
-	if (copy.length === 0) {
+	if (!last) {
+		return ''
+	}
+	if (copy.length === 0 && last) {
 		return last.toString()
 	}
 	let str = copy.join(', ')
@@ -41,7 +44,10 @@ export function stringToModMap (val: string) : Record<string, number> {
 		return {}
 	}
 	const match = val.match(/([a-z]+)([0-9]+)/g)
-	const map = {}
+	const map : Record<string, number> = {}
+	if (!match) {
+		return map
+	}
 	match.forEach((m) => {
 		const key = m.replace(/[0-9]+/, '')
 		const number = parseInt(m.replace(/[a-z]+/, ''))
