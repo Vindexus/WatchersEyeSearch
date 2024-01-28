@@ -7,7 +7,6 @@ import {PageInner} from "./PageInner";
 
 const Page = () => {
 	const data = useData<Data>()
-	console.log('data mod settings', data.modSettings)
 	const store = useRef(createWatchersEyeStore({
 		auras: data.auras.map(x => x.name),
 		modSettings: data.modSettings,

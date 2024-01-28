@@ -10,7 +10,6 @@ function Page () {
 		modSettings: {},
 	})).current
 
-
 	return <WatchersEyeContext.Provider value={store}>
 		<PageInner />
 	</WatchersEyeContext.Provider>

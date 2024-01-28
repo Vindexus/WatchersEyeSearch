@@ -7,7 +7,7 @@ import {
 	WatchersEyeContext
 } from "../../src/store/useWatchersEyeStore";
 import {useStore} from "zustand";
-import {Aura, AURA_SLUG_MAP, aurasToSlug} from "../../src/lib/auras";
+import {Aura, AURA_SLUG_MAP, aurasSlugToAuras, aurasToSlug} from "../../src/lib/auras";
 import {stringToModMap} from "../../src/lib/helpers";
 import {AuraIcon} from "../../src/components/AuraIcon";
 
@@ -28,10 +28,10 @@ const PageInner = () => {
 	const setModEnabled = useStore(store, s => s.setModEnabled)
 	const setModWeight = useStore(store, s => s.setModWeight)
 	const setAuraSettings = useStore(store, s => s.setAuraSettings)
+	const enableAura = useStore(store, s => s.enableAura)
 	const loadedSearchParamsRef = useRef(false)
 
 	useEffect(() => {
-		console.log('tradeLink', tradeLink)
 		const url = selModWeightURLSearchParams(store.getState())
 
 		// This timeout is for when people use the ranges to change the weights. Don't want to add
@@ -39,7 +39,6 @@ const PageInner = () => {
 		clearTimeout(urlChangeRef.current)
 		urlChangeRef.current = setTimeout(() => {
 			const location = window.location
-			console.log('location', location)
 			const path = location.pathname
 			if (!loadedSearchParamsRef.current) {
 				window.history.pushState(null, '', path+'?' + url)
@@ -52,18 +51,10 @@ const PageInner = () => {
 	}, [tradeLink, numSelected])
 
 	const auraNames = selected.map(x => x.aura.name).join('+')
-	useEffect(() => {
-		if (selected.length === 0) {
-			//document.title = titleRef.current
-			return
-		}
-
-		//document.title = auraNames + ' ' + titleRef.current
-	}, [auraNames])
 
 	useEffect(() => {
 		function onChange () {
-			const currentPageUrl = window.location.toString() // TODO: update for vike document.location.toString()
+			const currentPageUrl = window.location.toString()
 			const params = new URL(currentPageUrl).searchParams
 			const settingsPut: AuraSettingsPut = {}
 			params.forEach((val, slug) => {
@@ -85,6 +76,24 @@ const PageInner = () => {
 				})
 			})
 		}
+
+		// This is for loading the initial auras when someone lands on our GitHub Pages 404.html
+		// page from a very long list of auars. We don't prerender all the possible options cause
+		// there are thousands. So someone going to /Anger will get a pregenerated page, but someone
+		// going to /Anger-Determination-Hatred-Wrath-Zealotry will just land on our home page file
+		const pathname = window.location.pathname.replaceAll('/', '')
+		const auras = aurasSlugToAuras(pathname)
+		const slug = aurasToSlug(auras)
+		if (slug !== pathname) {
+			console.log('slug', slug)
+			console.log('pathname', pathname)
+			window.location.href = '/' + slug + '?' + window.location.search
+		}
+
+		auras.forEach((aura) => {
+			enableAura(aura.name)
+		})
+
 
 		onChange()
 		window.addEventListener('popstate', onChange)

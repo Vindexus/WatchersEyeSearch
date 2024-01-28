@@ -27,6 +27,7 @@ interface WatchersEyeSearchState {
 
 export interface WatchersEyeSearchStore extends WatchersEyeSearchState {
   toggleAura: (name: AuraName) => void
+	enableAura: (name: AuraName) => void
 	setModWeight: (aname: AuraName, modKey: string, value: number) => void
 	setModEnabled: (aname: AuraName, modKey: string, value: boolean) => void
 	toggleAuraMods: (name: AuraName) => void
@@ -147,6 +148,19 @@ export const createWatchersEyeStore = (opts: WatchersEyeInitialProps) => {
 							return a
 						})
 					}));
+				},
+				enableAura: (k: AuraName) => {
+					set(() => ({
+						auraSettings: get().auraSettings.map((as) => {
+							if (as.aura.name === k) {
+								return {
+									...as,
+									enabled: true,
+								}
+							}
+							return as
+						})
+					}))
 				},
 				setAuraSettings: (asp: AuraSettingsPut) => {
 					set(() => ({

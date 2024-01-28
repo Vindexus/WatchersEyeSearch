@@ -1,5 +1,4 @@
 import {toTitleCase} from "./helpers";
-console.log('toTitleCase', toTitleCase)
 
 export type AuraName = 'Anger' |
 'Clarity' |
@@ -353,7 +352,7 @@ export const AURA_NAME_MAP : Partial<Record<AuraName, Aura>> = AURAS.reduce((map
 
 
 export function aurasSlugToAuras (slug: string) : Aura[] {
-	const slugs = slug.split('-').filter(x => !!x)
+	const slugs = slug.replaceAll('/', '').split('-').filter(x => !!x)
 	const slugMap : Record<string, boolean> = {}
 	slugs.forEach((slug) => {
 		const aura = AURAS.find(x => x.slug.toLowerCase() === slug.toLowerCase())
@@ -377,7 +376,7 @@ function getPagesWithAddedAura (pages: string[][], auraSlug: string) : string[][
 	const newPages : string[][] = [
 	]
 	pages.forEach((auraSlugs) => {
-		if (!auraSlugs.includes(auraSlug) && auraSlugs.length <= 2) {
+		if (!auraSlugs.includes(auraSlug) && auraSlugs.length <= 3) {
 			newPages.push([...auraSlugs, auraSlug].sort())
 		}
 	})

@@ -57,7 +57,3 @@ const data = (pageContext: PageContextServer) => {
 		title: aurasStr ? `Watcher's Eye for ${aurasStr} - Trade Search Path of Exile Tool` : `Watcher's Eye Trade Search Tool for Path of Exile`
 	}
 }
-
-function sleep(milliseconds: number) {
-	return new Promise((r) => setTimeout(r, milliseconds))
-}
