@@ -29,23 +29,24 @@ const PageInner = () => {
 	const setModWeight = useStore(store, s => s.setModWeight)
 	const setAuraSettings = useStore(store, s => s.setAuraSettings)
 	const enableAura = useStore(store, s => s.enableAura)
+	const toggleAura = useStore(store, s => s.toggleAura)
 	const loadedSearchParamsRef = useRef(false)
 
 	useEffect(() => {
-		const url = selModWeightURLSearchParams(store.getState())
+		const search = selModWeightURLSearchParams(store.getState())
+		const aurasSlug = aurasToSlug(selected.map(a => a.aura))
 
 		// This timeout is for when people use the ranges to change the weights. Don't want to add
 		// every single number they slide between to their history
 		clearTimeout(urlChangeRef.current)
 		urlChangeRef.current = setTimeout(() => {
-			const location = window.location
-			const path = location.pathname
+			const path = '/' + aurasSlug
 			if (!loadedSearchParamsRef.current) {
-				window.history.pushState(null, '', path+'?' + url)
+				window.history.pushState(null, '', path+'?' + search)
 			}
 			else {
 				loadedSearchParamsRef.current = true
-				window.history.replaceState(null, '', path+'?' + url)
+				window.history.replaceState(null, '', path+'?' + search)
 			}
 		}, 300)
 	}, [tradeLink, numSelected])
@@ -85,8 +86,6 @@ const PageInner = () => {
 		const auras = aurasSlugToAuras(pathname)
 		const slug = aurasToSlug(auras)
 		if (slug !== pathname) {
-			console.log('slug', slug)
-			console.log('pathname', pathname)
 			window.location.href = '/' + slug + '?' + window.location.search
 		}
 
@@ -143,9 +142,13 @@ const PageInner = () => {
 												data-key={a.aura.name}
 												href={getAuraToggleURL(a)}
 												className={cls+ ` transition-all hover:border-gray-700 font-bold py-2 px-4 rounded m-2 flex`}
-								/*onClick={() => {
-									store.toggleAura(a.key)
-								}}*/
+												onClick={(e) => {
+													if (e && (e.altKey || e.ctrlKey || e.metaKey)) {
+														return
+													}
+													e.preventDefault()
+													toggleAura(a.aura.name)
+												}}
 							>
 								<AuraIcon aura={a.aura} className={'me-2 transition-all ' + (isSelected ? 'opacity-100' : 'opacity-70')} />
 								<span>

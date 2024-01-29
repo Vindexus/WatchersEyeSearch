@@ -17,7 +17,7 @@ export function oxfordJoin (list: (string | number)[], ending: string = ' and') 
 	}
 	let str = copy.join(', ')
 	if (last && str) {
-		str += ending + ', ' + last
+		str += ',' + ending + ' ' + last
 	}
 	return str
 }
