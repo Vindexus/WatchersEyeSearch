@@ -42,6 +42,12 @@ const onRenderHtml: OnRenderHtmlAsync = async (pageContext): ReturnType<OnRender
 			
 					gtag('config', '${import.meta.env.VITE_GOOGLE_ANALYTICS_ID}');
 				</script>
+				<script>
+				console.log('')
+				console.log('Contact:', 'contact@watcherseyesearch.com')
+				console.log('GitHub:', 'https://github.com/Vindexus/WatchersEyeSearch')
+				console.log('')				
+				</script>
       </head>
       <body>
         <div id="react-root">${dangerouslySkipEscape(pageHtml)}</div>
