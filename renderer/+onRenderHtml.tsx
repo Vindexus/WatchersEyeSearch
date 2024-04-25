@@ -46,7 +46,7 @@ const onRenderHtml: OnRenderHtmlAsync = async (pageContext): ReturnType<OnRender
 				console.log('')
 				console.log('Contact:', 'contact@watcherseyesearch.com')
 				console.log('GitHub:', 'https://github.com/Vindexus/WatchersEyeSearch')
-				console.log('')				
+				console.log('')
 				</script>
       </head>
       <body>

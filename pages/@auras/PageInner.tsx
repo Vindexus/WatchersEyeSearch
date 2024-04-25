@@ -12,7 +12,7 @@ import {stringToModMap} from "../../src/lib/helpers";
 import {AuraIcon} from "../../src/components/AuraIcon";
 
 const CSS = {
-	card: 'w-full bg-gray-800 border border-gray-800 shadow-lg rounded-2xl p-4 mb-2',
+	card: 'w-full bg-gray-800 border border-gray-800 shadow-lg rounded-2xl p-2 mb-2 md:p-4',
 }
 
 
@@ -141,7 +141,7 @@ const PageInner = () => {
 							return <a key={a.aura.name}
 												data-key={a.aura.name}
 												href={getAuraToggleURL(a)}
-												className={cls+ ` transition-all hover:border-gray-700 font-bold py-2 px-4 rounded m-2 flex`}
+												className={cls+ ` whitespace-nowrap flex justify-center grow lg:grow-0 transition-all hover:border-gray-700 font-bold py-2 px-4 rounded m-1 md:m-2 text-xs md:text-sm flex`}
 												onClick={(e) => {
 													if (e && (e.altKey || e.ctrlKey || e.metaKey)) {
 														return
