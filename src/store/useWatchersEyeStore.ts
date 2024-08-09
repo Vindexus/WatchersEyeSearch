@@ -1,9 +1,8 @@
-import {create, createStore} from 'zustand';
-import {logger} from './logger';
 import {createContext} from 'react'
-import {Aura, AuraName, AURAS, getModNormalizedWeight, Mod} from "../lib/auras";
+import {createStore} from 'zustand';
+import {type Aura, type AuraName, AURAS, getModNormalizedWeight, type Mod} from "../lib/auras";
 import {auraSettingToModListString} from "../lib/helpers";
-import {number} from "yup";
+import {logger} from './logger';
 
 type ModSettings = {
 	mod: Mod
@@ -37,29 +36,31 @@ export interface WatchersEyeSearchStore extends WatchersEyeSearchState {
 const initialState = (opts: WatchersEyeInitialProps) : Pick<WatchersEyeSearchStore, keyof WatchersEyeSearchState> => {
 	return {
 		auraSettings: AURAS.map((aura) : AuraSettings => {
-			const modSettings = opts.modSettings[aura.name] || {}
+			const modSettings = opts.modSettings[aura.name] ?? {}
+			const hasSettings = Object.keys(modSettings).length > 0
+
 			const settings : AuraSettings = {
 				enabled: opts.auras.includes(aura.name),
-				aura: aura,
+				aura,
 				mods: aura.mods.map((m) : ModSettings => {
 					if (modSettings[m.key] === 0) {
 						return {
 							weight: 50,
 							mod: m,
-							enabled: false,
+							enabled: !hasSettings,
 						}
 					}
 					if (!modSettings[m.key]) {
 						return {
 							weight: 50,
 							mod: m,
-							enabled: true,
+							enabled: !hasSettings,
 						}
 					}
 					const value = modSettings[m.key] || 50
 					const mSetting : ModSettings = {
 						enabled: true,
-						weight: value as number,
+						weight: value ,
 						mod: m,
 					}
 					return mSetting
@@ -232,21 +233,21 @@ type TradeQuery = {
 
 export const selModWeightURLSearchParams = (state: WatchersEyeSearchState, excludeAura?: string) : string => {
 	const query = state.auraSettings.reduce((obj: any, as) => {
-		//console.log('----')
-		//console.log('as.aura', as.aura.slug)
+		// console.log('----')
+		// console.log('as.aura', as.aura.slug)
 		if (!as.enabled || excludeAura === as.aura.slug) {
-			//console.log('aura not enabled')
+			// console.log('aura not enabled')
 			return obj
 		}
 		// ?Clarity=_ means all its mods are disabled
 		if (as.mods.every(m => !m.enabled)) {
-			//console.log('no mods are enabled')
+			// console.log('no mods are enabled')
 			obj[as.aura.slug] = '_'
 			return obj
 		}
 		// If all the mods are in their default position, don't bother adding it to the URL
 		if (as.mods.every(m => m.enabled && m.weight === 50)) {
-			//console.log('all mods are enabled and 50')
+			// console.log('all mods are enabled and 50')
 			return obj
 		}
 		const modList = auraSettingToModListString(as)
@@ -264,7 +265,7 @@ export const selModWeightURLSearchParams = (state: WatchersEyeSearchState, exclu
 }
 
 export const selTradeLink = (state: WatchersEyeSearchState) : null | string => {
-	let url = `https://pathofexile.com/trade/search?q=`
+	const url = `https://pathofexile.com/trade/search?q=`
 
 	const filters : TradeFilter[] = state.auraSettings.reduce((tfs: TradeFilter[], as) => {
 		if (!as.enabled) {
@@ -292,7 +293,7 @@ export const selTradeLink = (state: WatchersEyeSearchState) : null | string => {
 		stats: [
 			{
 				type: 'weight',
-				filters: filters,
+				filters,
 				disabled: false,
 				value: {
 					min: 1,
@@ -321,10 +322,10 @@ export const selTradeLink = (state: WatchersEyeSearchState) : null | string => {
 		},
 	}
 
-	let str = JSON.stringify({
-		query: query,
+	const str = JSON.stringify({
+		query,
 		sort: {
-			//'statgroup.0': 'desc', // This appears to be ignored, so I'm just using price
+			// 'statgroup.0': 'desc', // This appears to be ignored, so I'm just using price
 			price: 'asc',
 		}
 	})

@@ -27,12 +27,11 @@ const PageInner = () => {
 	const toggleAuraMods = useStore(store, s => s.toggleAuraMods)
 	const setModEnabled = useStore(store, s => s.setModEnabled)
 	const setModWeight = useStore(store, s => s.setModWeight)
-	const setAuraSettings = useStore(store, s => s.setAuraSettings)
 	const enableAura = useStore(store, s => s.enableAura)
 	const toggleAura = useStore(store, s => s.toggleAura)
 	const loadedSearchParamsRef = useRef(false)
 
-	useEffect(() => {
+	function debouncedUpdatePageURL () {
 		const search = selModWeightURLSearchParams(store.getState())
 		const aurasSlug = aurasToSlug(selected.map(a => a.aura))
 
@@ -49,9 +48,7 @@ const PageInner = () => {
 				window.history.replaceState(null, '', path+'?' + search)
 			}
 		}, 300)
-	}, [tradeLink, numSelected])
-
-	const auraNames = selected.map(x => x.aura.name).join('+')
+	}
 
 	useEffect(() => {
 		function onChange () {
@@ -148,6 +145,7 @@ const PageInner = () => {
 													}
 													e.preventDefault()
 													toggleAura(a.aura.name)
+													debouncedUpdatePageURL()
 												}}
 							>
 								<AuraIcon aura={a.aura} className={'me-2 transition-all ' + (isSelected ? 'opacity-100' : 'opacity-70')} />
@@ -168,7 +166,6 @@ const PageInner = () => {
 						const aura = as.aura
 						const enabled = as.enabled
 						const href = getAuraToggleURL(as)
-						let legacyMod = false
 						return (
 							<section key={as.aura.name}
 								className={'overflow-hidden duration-1000 transition-all ease-in-out ' + (!enabled ? 'opacity-70' : ('opacity-100 '))}
@@ -191,21 +188,20 @@ const PageInner = () => {
 											type={'button'}
 											onClick={() => {
 												toggleAuraMods(aura.name)
+												debouncedUpdatePageURL()
 											}}
 											className={'text-xs py-1 px-2 border border-gray-600 rounded text-gray-500 hover:text-gray-400 hover:border-gray-400'}>
 											Toggle All
 										</button>
 									</div>
 									{as.mods.map((mod) => {
-										if (mod.mod.isLegacy) {
-											legacyMod = true
-										}
 										return <div key={mod.mod.key} className={'mb-4 transition-all ' + (mod.enabled ? 'opacity-100' : 'opacity-50')}>
 											<label className={'w-full flex items-center'}>
 												<input
 													type={'checkbox'}
 													onChange={(e) => {
 														setModEnabled(as.aura.name, mod.mod.key, e.target.checked)
+														debouncedUpdatePageURL()
 													}}
 													checked={mod.enabled}
 													className={'me-1 mt-1'}
@@ -224,8 +220,8 @@ const PageInner = () => {
 													max={100}
 													value={mod.weight}
 													onChange={(e) => {
-														console.log('value', e.target.value)
 														setModWeight(as.aura.name, mod.mod.key, parseInt(e.target.value))
+														debouncedUpdatePageURL()
 													}}
 													className="join-item w-full h-2 animated bg-gray-200 rounded-lg appearance-none cursor-pointer bg-gray-600"
 												/>
