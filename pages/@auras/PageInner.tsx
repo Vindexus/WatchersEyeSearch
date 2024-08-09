@@ -168,68 +168,76 @@ const PageInner = () => {
 						const aura = as.aura
 						const enabled = as.enabled
 						const href = getAuraToggleURL(as)
-						return <section key={as.aura.name}
-														className={'overflow-hidden duration-1000 transition-all ease-in-out ' + (!enabled ? 'opacity-70' : ('opacity-100 '))}
-														style={{
-															maxHeight: enabled ? `2000px` : '0px',
-															transform: `translateY(${enabled ? 0 : -2000}px)`
-														}}
-						>
-							<div className={CSS.card}>
-								<div className={'flex items-center justify-between'}>
-									<h3 className={'font-bold text-lg mb-2'}>
-										{aura.name}
-										<a
-											href={href}
-											className={'ms-2 text-xs py-1 px-2 border border-gray-600 rounded text-gray-500 hover:text-gray-400 hover:border-gray-400'}>
-											X
-										</a>
-									</h3>
-									<button
-										type={'button'}
-										onClick={() => {
-											toggleAuraMods(aura.name)
-										}}
-										className={'text-xs py-1 px-2 border border-gray-600 rounded text-gray-500 hover:text-gray-400 hover:border-gray-400'}>
-										Toggle All
-									</button>
-								</div>
-								{as.mods.map((mod) => {
-									return <div key={mod.mod.key} className={'mb-4 transition-all ' + (mod.enabled ? 'opacity-100' : 'opacity-50')}>
-										<label className={'w-full flex items-center'}>
-											<input
-												type={'checkbox'}
-												onChange={(e) => {
-													setModEnabled(as.aura.name, mod.mod.key, e.target.checked)
-												}}
-												checked={mod.enabled}
-												className={'me-1 mt-1'}
-											/>
-											<span>
-												{mod.mod.description}
-											</span>
-										</label>
-										<div className={'join flex align-center items-center transition-all overflow-hidden ' + (mod.enabled ? 'h-6' : 'h-0')}>
-											<span className={'text-gray-500 text-xs me-2'}>Weight</span>
-											<input
-												type="range"
-												min={1}
-												max={100}
-												value={mod.weight}
-												onChange={(e) => {
-													console.log('value', e.target.value)
-													setModWeight(as.aura.name, mod.mod.key, parseInt(e.target.value))
-												}}
-												className="join-item w-full h-2 animated bg-gray-200 rounded-lg appearance-none cursor-pointer bg-gray-600"
-											/>
-											<div className={'join-item w-12 p-1 text-right'}>
-												{mod.weight}%
+						let legacyMod = false
+						return (
+							<section key={as.aura.name}
+								className={'overflow-hidden duration-1000 transition-all ease-in-out ' + (!enabled ? 'opacity-70' : ('opacity-100 '))}
+								style={{
+									maxHeight: enabled ? `2000px` : '0px',
+									transform: `translateY(${enabled ? 0 : -2000}px)`
+								}}
+							>
+								<div className={CSS.card}>
+									<div className={'flex items-center justify-between'}>
+										<h3 className={'font-bold text-lg mb-2'}>
+											{aura.name}
+											<a
+												href={href}
+												className={'ms-2 text-xs py-1 px-2 border border-gray-600 rounded text-gray-500 hover:text-gray-400 hover:border-gray-400'}>
+												X
+											</a>
+										</h3>
+										<button
+											type={'button'}
+											onClick={() => {
+												toggleAuraMods(aura.name)
+											}}
+											className={'text-xs py-1 px-2 border border-gray-600 rounded text-gray-500 hover:text-gray-400 hover:border-gray-400'}>
+											Toggle All
+										</button>
+									</div>
+									{as.mods.map((mod) => {
+										if (mod.mod.isLegacy) {
+											legacyMod = true
+										}
+										return <div key={mod.mod.key} className={'mb-4 transition-all ' + (mod.enabled ? 'opacity-100' : 'opacity-50')}>
+											<label className={'w-full flex items-center'}>
+												<input
+													type={'checkbox'}
+													onChange={(e) => {
+														setModEnabled(as.aura.name, mod.mod.key, e.target.checked)
+													}}
+													checked={mod.enabled}
+													className={'me-1 mt-1'}
+												/>
+
+												<span>
+													{mod.mod.isLegacy && <abbr title={"Only available in Standard"} className={'text-yellow-700 font-bold font-mono me-1'}>*</abbr>}
+													{mod.mod.description}
+												</span>
+											</label>
+											<div className={'join flex align-center items-center transition-all overflow-hidden ' + (mod.enabled ? 'h-6' : 'h-0')}>
+												<span className={'text-gray-500 text-xs me-2'}>Weight</span>
+												<input
+													type="range"
+													min={1}
+													max={100}
+													value={mod.weight}
+													onChange={(e) => {
+														console.log('value', e.target.value)
+														setModWeight(as.aura.name, mod.mod.key, parseInt(e.target.value))
+													}}
+													className="join-item w-full h-2 animated bg-gray-200 rounded-lg appearance-none cursor-pointer bg-gray-600"
+												/>
+												<div className={'join-item w-12 p-1 text-right'}>
+													{mod.weight}%
+												</div>
 											</div>
 										</div>
-									</div>
-								})}
-							</div>
-						</section>
+									})}
+								</div>
+							</section>
+						)
 					})}
 				</div>
 			</div>

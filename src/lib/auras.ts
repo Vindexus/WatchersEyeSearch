@@ -35,6 +35,7 @@ export type Mod = {
 	description: string
 	minVal: number
 	maxVal: number
+	isLegacy: boolean // Some mods are removed for a new league, but still available in Standard
 	flipped?: boolean // For the negative ones like Clarity mana cost? I dunno
 }
 
@@ -66,22 +67,23 @@ export function getModNormalizedWeight (mod: Mod, weight: number) : number {
 	return mult * (weight/100)
 }
 
-function newMod (description: string, key: string, stat: number) : Mod {
+function newMod (description: string, key: string, stat: number, leg?: 'legacy') : Mod {
+	const isLegacy = leg === 'legacy'
 	const matches = description.match(/(\([0-9\.]+\-[0-9\.]+\))+/g)
 
 	let minVal = 0
 	let maxVal = 0
 	// Mods like 'Unaffected by Enfeeble' don't have ranges
-	if (!matches || description.indexOf('(') === -1) {
+	if (!matches || !description.includes('(')) {
 		minVal = 1
 		maxVal = 1
 	}
 	else if (matches.length === 1) {
-		[minVal, maxVal] = getRange(matches![0])
+		[minVal, maxVal] = getRange(matches[0])
 	}
 	else if (matches.length === 2) {
-		const [lowMin, lowMax] = getRange(matches![0])
-		const [highMin, highMax] = getRange(matches![1])
+		const [lowMin, lowMax] = getRange(matches[0])
+		const [highMin, highMax] = getRange(matches[1])
 		minVal = (lowMin + highMin) / 2
 		maxVal = (lowMax + highMax) / 2
 	}
@@ -95,6 +97,7 @@ function newMod (description: string, key: string, stat: number) : Mod {
 		stat,
 		minVal,
 		maxVal,
+		isLegacy,
 	}
 }
 
@@ -145,9 +148,10 @@ auraDefs.push({
 	stat: 'str',
 	mods: [
 		newMod('Immune to Ignite while affected by Purity of Fire', 'i', 371612541),
-		newMod('(6-10)% of Physical Damage from Hits taken as Fire Damage while affected by Purity of Fire', 'p', 1798459983),
 		newMod('Unaffected by Burning Ground while affected by Purity of Fire', 'b', 3308185931),
-		newMod('Unaffected by Flammability while affected by Purity of Fire', 'f', 1173690938)
+		newMod('Unaffected by Flammability while affected by Purity of Fire', 'f', 1173690938),
+		newMod('(10-20)% of Cold and Lightning Damage taken as Fire Damage while affected by Purity of Fire', 't', 1723738042),
+		newMod('(6-10)% of Physical Damage from Hits taken as Fire Damage while affected by Purity of Fire', 'p', 1798459983, 'legacy'),
 	]
 })
 
@@ -216,9 +220,10 @@ auraDefs.push({
 	stat: 'dex',
 	mods: [
 		newMod('Immune to Freeze while affected by Purity of Ice', 'i', 2720072724),
-		newMod('(6-10)% of Physical Damage from Hits taken as Cold Damage while affected by Purity of Ice', 'p', 1779027621),
 		newMod('Unaffected by Chilled Ground while affected by Purity of Ice', 'c', 2647344903),
-		newMod('Unaffected by Frostbite while affected by Purity of Ice', 'f', 4012281889)
+		newMod('Unaffected by Frostbite while affected by Purity of Ice', 'f', 4012281889),
+		newMod('(10-20)% of Fire and Lightning Damage taken as Cold Damage while affected by Purity of Ice', 'fl', 2189467271),
+		newMod('(6-10)% of Physical Damage from Hits taken as Cold Damage while affected by Purity of Ice', 'p', 1779027621, 'legacy'),
 	]
 })
 
@@ -265,10 +270,13 @@ auraDefs.push({
 	mods: [
 		newMod('+(30-50)% to Chaos Resistance while affected by Purity of Elements', 'cr', 1138813382),
 		newMod('(50-40)% reduced Reflected Elemental Damage taken while affected by Purity of Elements', 'r', 65331133),
-		newMod('(8-12)% of Physical Damage from Hits taken as Cold Damage while affected by Purity of Elements', 'c', 1710207583),
-		newMod('(8-12)% of Physical Damage from Hits taken as Fire Damage while affected by Purity of Elements', 'f', 1722775216),
-		newMod('(8-12)% of Physical Damage from Hits taken as Lightning Damage while affected by Purity of Elements', 'l', 873224517),
-		newMod('Unaffected by Elemental Weakness while affected by Purity of Elements', 'ew', 3223142064)
+		newMod('+1% to all maximum Elemental Resistances while affected by Purity of Elements', 'mr', 3234824465),
+		newMod('Unaffected by Elemental Weakness while affected by Purity of Elements', 'ew', 3223142064),
+
+		newMod('(8-12)% of Physical Damage from Hits taken as Cold Damage while affected by Purity of Elements', 'c', 1710207583, 'legacy'),
+		newMod('(8-12)% of Physical Damage from Hits taken as Fire Damage while affected by Purity of Elements', 'f', 1722775216, 'legacy'),
+		newMod('(8-12)% of Physical Damage from Hits taken as Lightning Damage while affected by Purity of Elements', 'l', 873224517, 'legacy'),
+
 	]
 })
 
@@ -277,9 +285,10 @@ auraDefs.push({
 	stat: 'int',
 	mods: [
 		newMod('Immune to Shock while affected by Purity of Lightning', 's', 281949611),
-		newMod('(6-10)% of Physical Damage from Hits taken as Lightning Damage while affected by Purity of Lightning', 'p', 254131992),
 		newMod('Unaffected by Conductivity while affected by Purity of Lightning', 'c', 1567542124),
-		newMod('Unaffected by Shocked Ground while affected by Purity of Lightning', 'g', 2567659895)
+		newMod('Unaffected by Shocked Ground while affected by Purity of Lightning', 'g', 2567659895),
+		newMod('(10-20)% of Fire and Cold Damage taken as Lightning Damage while affected by Purity of Lightning', 't', 3953667743),
+		newMod('(6-10)% of Physical Damage from Hits taken as Lightning Damage while affected by Purity of Lightning', 'p', 254131992, 'legacy'),
 	]
 })
 
