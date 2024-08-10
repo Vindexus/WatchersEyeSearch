@@ -25,6 +25,7 @@ const data = (pageContext: PageContextServer) => {
 	}
 
 	const modSettings : AuraSettingsPut = {}
+/*
 
 	if (pageContext.urlParsed.search) {
 		Object.keys(pageContext.urlParsed.search).forEach((slug) => {
@@ -49,6 +50,7 @@ const data = (pageContext: PageContextServer) => {
 			modSettings[aura.name] = vals
 		})
 	}
+*/
 
 	return {
 		auras,

@@ -52,27 +52,49 @@ const PageInner = () => {
 		}, 300)
 	}
 
+	function setModWeightFromCurrentURL () {
+		const currentPageUrl = window.location.toString()
+		const params = new URL(currentPageUrl).searchParams
+		const auras = aurasSlugToAuras(window.location.pathname)
+		auras.forEach((aura) => {
+			const slug = aura.slug
+			if (!params.has(slug)) {
+				for (const mod of aura.mods) {
+					setModEnabled(aura.name, mod.key, true)
+				}
+				return
+			}
+			const val = params.get(slug)
+
+			if (slug === '_') {
+				for (const mod of aura.mods) {
+					setModEnabled(aura.name, mod.key, false)
+				}
+				return
+			}
+
+			const modSettings = stringToModMap(val)
+			console.log(val, slug, modSettings)
+			//setModWeight(aura.name, key, weightI)
+			for (const mod of aura.mods) {
+				if (mod.key in modSettings) {
+					setModWeight(aura.name, mod.key, modSettings[mod.key])
+					setModEnabled(aura.name, mod.key, true)
+				}
+				else {
+					setModEnabled(aura.name, mod.key, false)
+				}
+			}
+			/*Object.keys(modSettings).forEach((modKey) => {
+				console.log('setting weight', aura.name, modKey, modSettings[modKey])
+				setModWeight(aura.name, modKey, modSettings[modKey])
+			})*/
+		})
+	}
+
 	useEffect(() => {
 		function onChange () {
-			const currentPageUrl = window.location.toString()
-			const params = new URL(currentPageUrl).searchParams
-			params.forEach((val, slug) => {
-				const aura = AURA_SLUG_MAP[slug]
-				if (!aura) {
-					return
-				}
-
-				if (slug === '_') {
-					return
-				}
-
-				const modSettings = stringToModMap(val)
-				//setModWeight(aura.name, key, weightI)
-				Object.keys(modSettings).forEach((modKey) => {
-					setModWeight(aura.name, modKey, modSettings[modKey])
-				})
-			})
-
+			setModWeightFromCurrentURL()
 
 			// This is for loading the initial auras when someone lands on our GitHub Pages 404.html
 			// page from a very long list of auars. We don't prerender all the possible options cause
