@@ -44,6 +44,7 @@ const onRenderHtml: OnRenderHtmlAsync = async (pageContext): ReturnType<OnRender
       <body>
         <div id="react-root">${dangerouslySkipEscape(pageHtml)}</div>
 				<script async defer src="https://scripts.withcabin.com/hello.js"></script>
+				<script defer data-domain="watcherseyesearch.com" src="https://plausible.io/js/script.js"></script>
       </body>
     </html>`
 
