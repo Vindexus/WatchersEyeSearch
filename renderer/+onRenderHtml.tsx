@@ -43,7 +43,7 @@ const onRenderHtml: OnRenderHtmlAsync = async (pageContext): ReturnType<OnRender
       </head>
       <body>
         <div id="react-root">${dangerouslySkipEscape(pageHtml)}</div>
-				<script defer data-api="https://mango.vindexus.net/api/event" data-domain="watcherseyesearch.com" src="https://mango.vindexus.net/js/script.js"></script>
+				<script defer data-domain="watcherseyesearch.com" src="https://pa.vindexus.net/js/script.js"></script>
       </body>
     </html>`
 
